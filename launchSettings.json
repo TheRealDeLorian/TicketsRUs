@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "service": "blazorapp",
+      "project": "docker-compose.yml",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "webapitru": "StartDebugging"
+      }
+    }
+  }
+}

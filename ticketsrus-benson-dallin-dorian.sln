@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryTRU", "LibraryTRU\Li
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestsTRU", "TestsTRU\TestsTRU.csproj", "{E79F76AE-C490-455E-BFE1-7D6A4570237D}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{29F13ADF-4D5F-430E-ADF0-ECDD039F05CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{E79F76AE-C490-455E-BFE1-7D6A4570237D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E79F76AE-C490-455E-BFE1-7D6A4570237D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E79F76AE-C490-455E-BFE1-7D6A4570237D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29F13ADF-4D5F-430E-ADF0-ECDD039F05CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29F13ADF-4D5F-430E-ADF0-ECDD039F05CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29F13ADF-4D5F-430E-ADF0-ECDD039F05CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29F13ADF-4D5F-430E-ADF0-ECDD039F05CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
