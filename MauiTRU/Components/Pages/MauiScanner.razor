@@ -1,0 +1,94 @@
+﻿@using LibraryTRU.Exceptions
+@using ZXing.Net.Maui;
+@inject ITicketService its
+
+<h3>MauiScanner</h3>
+
+<button class="" @onclick="DoScanAsync">Scan</button>
+
+<br />
+
+@if (!string.IsNullOrEmpty(successResultLabel))
+{
+    <div class="alert alert-success">
+        @successResultLabel
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorResultLabel))
+{
+    <div class="alert alert-danger">
+        @errorResultLabel
+    </div>
+}
+
+
+
+@code
+{
+    [Parameter]
+    public int concertId { get; set; }
+    [Parameter]
+    public Func<Task<List<Ticket>>> GetTickets { get; set; }
+
+    private string successResultLabel = "";
+    private string errorResultLabel = "";
+    List<Ticket> tickets;
+
+    protected override async Task OnInitializedAsync()
+    {
+        tickets = await GetTickets();
+    }
+
+    public async Task DoScanAsync()
+    {
+        var scanResults = await GetScanResultsAsync();
+        if(scanResults is null)
+            return;
+
+        var barcode = scanResults.Value;
+
+        if (barcode != null && EnsureCorrectConcert(barcode))
+        {
+            try
+            {
+                await its.ScanTicket(barcode);
+                errorResultLabel = "";
+                successResultLabel = "Scan success!";
+            }
+            catch (TicketAlreadyScannedException)
+            {
+                successResultLabel = "";
+                errorResultLabel = "Error -- Ticket was already scanned";
+            }
+        }
+        else
+        {
+            successResultLabel = "";
+            errorResultLabel = "This code is for another event or invalid.";
+        }
+    }
+
+    public async Task<BarcodeResult> GetScanResultsAsync()
+    {
+        var cameraPage = new CameraPage();
+
+        await Application.Current.MainPage.Navigation.PushModalAsync(cameraPage);
+
+        var results = await cameraPage.WaitForResultAsync();
+
+        await Application.Current.MainPage.Navigation.PopModalAsync();
+
+        return results;
+    }
+
+    public bool EnsureCorrectConcert(string barcode)
+    {
+        var t = tickets.Where(t => t.Qrhash == barcode).SingleOrDefault();
+
+        if (t is null || t.ConcertId != concertId)
+            return false;
+
+        return true;
+    }
+}

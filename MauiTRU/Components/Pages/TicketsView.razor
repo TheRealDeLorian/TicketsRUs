@@ -1,0 +1,29 @@
+﻿@page "/tickets/{concert_id:int}"
+@inject ITicketService ticketService
+
+
+<MauiScanner concertId="concert_id" GetTickets="GetTickets" />
+
+<ViewTicketsComponent concert_id="concert_id" GetTickets="GetTickets" />
+
+
+@code {
+    [Parameter]
+    public int concert_id { get; set; }
+
+    private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+    public async Task<List<Ticket>> GetTickets()
+    {
+        await _semaphore.WaitAsync();
+
+        try
+        {
+            return (List<Ticket>)await ticketService.GetAll();
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+}

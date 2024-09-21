@@ -1,0 +1,29 @@
+﻿@page "/tickets/{_concert_id:int}"
+@using Net.Codecrete.QrCodeGenerator
+@rendermode InteractiveServer
+@inject ITicketService ticketService
+
+<TicketsPurchaseComponent concert_id="_concert_id" GetTickets="GetTickets" />
+<ViewTicketsComponent concert_id="_concert_id" GetTickets="GetTickets" />
+
+
+@code {
+    //Right now we have to reload the page to see the new tickets, I don't want that
+    [Parameter]
+    public int _concert_id { get; set; }
+    private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+    public async Task<List<Ticket>> GetTickets()
+    {
+        await _semaphore.WaitAsync();
+
+        try
+        {
+            return (List<Ticket>) await ticketService.GetAll();
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+}

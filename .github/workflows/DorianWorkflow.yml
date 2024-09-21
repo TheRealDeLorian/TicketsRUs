@@ -1,0 +1,80 @@
+name: Dorian's deployment to alex server
+on:
+  push:
+    branches:
+    - Dorian
+jobs:
+  run-on-github-actions:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@master
+      - name: "get rid of current composition"
+        run: |
+            cd ./ticketsrus-benson-dallin-dorian/Staging
+            docker compose down -v
+            cd ../../
+            rm -rf ./ticketsrus-benson-dallin-dorian
+        working-directory: ./../../../../
+      - name: "clone the github"
+        run: |
+            git clone --single-branch --branch doriandocker https://${{secrets.DORIAN_PAT}}@github.com/SnowSE/ticketsrus-benson-dallin-dorian.git
+        working-directory: ./../../../../
+      - name: "Turn on the docker containers"
+        run: |
+            cd ./ticketsrus-benson-dallin-dorian/Staging
+            docker compose up --build -d
+        working-directory: ./../../../../
+      - name: Microsoft Teams Failure Notification
+        uses: skitionek/notify-microsoft-teams@master
+        if: failure()
+        with:
+          webhook_url: ${{ secrets.DORIAN_TEAMS_WEBHOOK }}
+          raw: >-
+            {
+              "@type": "MessageCard",
+              "@context": "http://schema.org/extensions",
+              "correlationId": "0b72cc8a2cea509ba06b41892066784d7f602834",
+              "themeColor": "#999",
+              "title": "Dorian's app just got pwned!",
+              "summary": "[SnowSE/ticketsrus-benson-dallin-dorian](https://github.com/SnowSE/ticketsrus-benson-dallin-dorian)",
+              "sections": [
+                {
+                  "activityTitle": "",
+                  "activitySubtitle": "The deployment failed. Better luck next time.",
+                  "activityImage": "https://cdn4.iconfinder.com/data/icons/web-design-and-development-88/64/web_application_error_crash_error-512.png"
+                }
+              ],
+              "potentialAction": [
+                {
+                  "@type": "OpenUri",
+                  "name": "Repository",
+                  "targets": [
+                    {
+                      "os": "default",
+                      "uri": "https://github.com/SnowSE/ticketsrus-benson-dallin-dorian"
+                    }
+                  ]
+                },
+                {
+                  "@type": "OpenUri",
+                  "name": "Compare",
+                  "targets": [
+                    {
+                      "os": "default",
+                      "uri": "https://github.com/SnowSE/ticketsrus-benson-dallin-dorian/compare/fff6296f7ed1...0b72cc8a2cea"
+                    }
+                  ]
+                }
+              ],
+              "text": ""
+            }
+      - name: Microsoft Teams Success Notification
+        uses: skitionek/notify-microsoft-teams@master
+        if: success()
+        with:
+          webhook_url: ${{ secrets.DORIAN_TEAMS_WEBHOOK }}
+          needs: ${{ toJson(needs) }}
+          job: ${{ toJson(job) }}
+          steps: ${{ toJson(steps) }}
+
+          

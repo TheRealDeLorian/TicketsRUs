@@ -1,0 +1,80 @@
+﻿@using LibraryTRU.Data
+@using LibraryTRU.IServices
+@using LibraryTRU.Data.DTOs
+@inject IEmailService emailService
+@inject IConcertService concertService
+@inject ITicketService ticketService
+
+<p>Please enter your email</p>
+
+<input type="text" @bind=@userEmail />
+<button class="btn btn-primary" @onclick="PurchaseTicket">Purchase</button>
+
+
+@if (!string.IsNullOrEmpty(successResultLabel))
+{
+    <div class="alert alert-success">
+        @successResultLabel
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorResultLabel))
+{
+    <div class="alert alert-danger">
+        @errorResultLabel
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int concert_id { get; set; }
+    [Parameter]
+    public Func<Task<List<Ticket>>> GetTickets { get; set; }
+    public List<Ticket>? tickets { get; set; }
+
+    string successResultLabel = "";
+    string errorResultLabel = "";
+
+    public string? userEmail;
+    Concert? concert;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        tickets = await GetTickets();
+        concert = (await concertService.GetAll()).Where(c => c.Id == concert_id).FirstOrDefault();
+    }
+
+    public async Task PurchaseTicket()
+    {
+        try
+        {
+
+            if (userEmail is not null && concert is not null) // Maybe catch if they put in a non-email
+            {
+                var ticket = await ticketService.AddTicket(userEmail, concert.Id);
+                EmailInfoDTO emailDto = new()
+                    {
+                        Email = userEmail,
+                        Subject = "Tickets-R-US Ticket Confirmation",
+                        Message = $"Thank you for purchasing a ticket for event: {concert.EventName}",
+                        QrHash = ticket.Qrhash
+                    };
+                emailService.SendEmail(emailDto);
+                userEmail = null;
+                errorResultLabel = "";
+                successResultLabel = "Your ticket has been reserved. Please check your email for your QR code.";
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+        catch
+        {
+            successResultLabel = "";
+            errorResultLabel = "There was an error reserving your ticket. Please try again.";
+        }
+    }
+    }
+}

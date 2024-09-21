@@ -1,0 +1,54 @@
+﻿@using MauiTRU.Services
+@inject HttpClient htpc
+@inject BackgroundTimerService bts
+@inject ConnectivityForPhone cfp
+@inject LocalTRUDatabase localDB
+
+<h3>Settings</h3>
+<label for="control">Offline Mode: </label>
+<input type="checkbox" id="control" @bind="offlinemode" @onclick="ToggleOffLineMode" />
+<br />
+<label for="apiUri">API base address: </label>
+<InputText id="apiUri" @bind-Value="APIUri"/>
+<button class="submit" @onclick="ChangeHttpBase">Change API base address</button>
+<br />
+<label for="refreshrate">Refresh Frequency (seconds): </label>
+<InputNumber TValue="int" id="refreshrate" @bind-Value="refreshrate"/>
+<button class="submit" @onclick="(async () => await UpdateRefreshRate())">Update Frequencey</button>
+
+@code {
+    bool offlinemode;
+    string? APIUri;
+    int refreshrate;
+
+    protected override void OnInitialized()
+    {
+        APIUri = htpc.BaseAddress?.ToString();
+        refreshrate = Preferences.Get(Constants.RefreshRateKey, Constants.DefaultRefreshRate);
+        offlinemode = cfp.ForceDisconnect;
+    }
+
+    async Task UpdateRefreshRate()
+    {
+        await bts.ChangeTimePeriod(refreshrate);
+        Preferences.Set(Constants.RefreshRateKey, refreshrate);
+    }
+
+    async Task ChangeHttpBase()
+    {
+        if(APIUri is not null)
+        {
+            htpc = new HttpClient();
+            htpc.BaseAddress = new(APIUri);
+            Preferences.Set(Constants.PreferenceKeyForAPI, APIUri);
+            await localDB.DeleteDatabase();
+            await bts.ChangeTimePeriod(bts.GetTimePeriod);
+        }
+    }
+
+    void ToggleOffLineMode()
+    {
+        cfp.ForceDisconnect = !cfp.ForceDisconnect;
+        Preferences.Set(Constants.OfflineModeKey, offlinemode);
+    }
+}

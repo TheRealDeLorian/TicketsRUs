@@ -1,0 +1,47 @@
+﻿@using LibraryTRU.Data
+@using LibraryTRU.IServices
+@inject IConcertService ics
+@inject NavigationManager nm
+<PageTitle>Home</PageTitle>
+
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <h1>Select an event</h1>
+        </div>
+    </div>
+</div>
+<div id="selectionbuttons">
+    <div>
+        @if(Concerts is not null)
+        {
+            foreach (Concert show in Concerts)
+            {
+                int tempId = show.Id;
+                <button class="btn btn-primary" style="margin: 3px;" @onclick="() => NavigateToPage(tempId)">@show.EventName - @show.StartTime</button> 
+                <br />
+            }
+        }
+            
+    </div>
+</div>
+
+@code {
+    List<Concert> Concerts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Concerts = (List<Concert>) await ics.GetAll();
+        }
+        catch(Exception e)
+        {
+            throw;
+        }
+    }
+
+    public void NavigateToPage(int id){
+        nm.NavigateTo($"/tickets/{id}");
+    }
+}

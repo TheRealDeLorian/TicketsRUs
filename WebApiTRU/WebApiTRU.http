@@ -1,0 +1,13 @@
+﻿@WebApiTRU_HostAddress = https://localhost:7288
+
+POST {{WebApiTRU_HostAddress}}/email
+Content-Type: application/json
+
+{
+  "email": "thenewdorian21@gmail.com",
+  "subject": "Test from http file",
+  "message": "Test"
+}
+
+###
+

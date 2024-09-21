@@ -1,0 +1,11 @@
+﻿@page "/alltickets"
+@inject ITicketService ticketService
+
+<ViewTicketsComponent concert_id="-1" GetTickets="GetTickets"/>
+
+@code {
+    public async Task<List<Ticket>> GetTickets()
+    {
+        return (List<Ticket>)await ticketService.GetAll();
+    }
+}

@@ -1,0 +1,83 @@
+﻿@using LibraryTRU.Data
+@if(concertTickets is not null)
+{
+        <label>
+            Tickets
+        </label>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Ticket</th>
+                    <th scope="col">Concert Name</th>
+                    <th scope="col">Start Time</th>
+                    <th scope="col">Checked In</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in concertTickets)
+                {
+                    @if (t.Timescanned is not null)
+                    {
+                        <tr style="background-color: Lightgreen">
+                            <td>
+                                @t.Id
+                            </td>
+                            <td>
+                                @t.Concert.EventName
+                            </td>
+                            <td>
+                                @t.Concert.StartTime
+                            </td>
+                            <td>
+                                Checked in!
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr style="background-color: lightcoral">
+                            <td>
+                                @t.Id
+                            </td>
+                            <td>
+                                @t.Concert.EventName
+                            </td>
+                            <td>
+                                @t.Concert.StartTime
+                            </td>
+                            <td>
+                                NOT checked in...
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+}
+
+@code {
+    [Parameter]
+    public int concert_id { get; set; }
+    [Parameter, EditorRequired]
+    public Func<Task<List<Ticket>>> GetTickets { get; set; }
+
+    List<Ticket> concertTickets = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tickets = await GetTickets();
+
+        if(concert_id == -1)
+        {
+            concertTickets = tickets;
+            return;
+        }
+
+        foreach(var t in tickets)
+        {
+            if(t.ConcertId == concert_id)
+                concertTickets.Add(t);
+        }
+    }
+}
