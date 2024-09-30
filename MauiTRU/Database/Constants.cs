@@ -24,7 +24,7 @@ namespace MauiTRU.Database
             SQLite.SQLiteOpenFlags.SharedCache;
         public const string PreferenceKeyForAPI = "APIRoute";
         public const string LocalHostDefault = "https://localhost:7288";
-        public const string ProductionDefault = "https://webapitru.azurewebsites.net/";
-        public const int DefaultRefreshRate = 30;
+        public const string ProductionDefault = "https://localhost:7288";
+        public const int DefaultRefreshRate = 3;
     }
 }

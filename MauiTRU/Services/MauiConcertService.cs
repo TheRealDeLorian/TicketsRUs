@@ -18,6 +18,11 @@ namespace MauiTRU.Services
             _database = database;
         }
 
+        public Task AddNewAsync(Concert concert)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<Concert>> GetAll()
         {
             return await _database.GetConcertsAsync();
