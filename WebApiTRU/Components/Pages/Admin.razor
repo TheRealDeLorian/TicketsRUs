@@ -1,0 +1,59 @@
+﻿@page "/admin"
+@rendermode InteractiveServer
+@inject IConcertService ics
+@using LibraryTRU.Data
+@using LibraryTRU.IServices
+@using WebApiTRU.Services
+
+<h3>Admin</h3>
+@if (Concerts is not null)
+{
+    
+@foreach (var concert in Concerts)
+{
+    <div>@concert.EventName</div>
+}
+
+}
+<h5>Add new concert</h5>
+<form @onsubmit="CreateConcert">
+    <InputText @bind-Value="@newConcertName"></InputText>
+    <button type="submit">Submit</button>
+</form>
+
+<div>@msg</div>
+
+@code {
+    List<Concert> Concerts = new List<Concert>();
+    string newConcertName = "";
+    string msg = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Concerts = (List<Concert>)await ics.GetAll();
+        }
+        catch (Exception e)
+        {
+            throw;
+        }
+    }
+
+    private async void CreateConcert()
+    {
+        DateTime now = DateTime.Now;
+        Concert newConcert = new()
+        {
+            EventName = newConcertName,
+            StartTime = now,
+            EndTime = now.AddHours(2),
+            Description = "Example"
+            
+        };
+        await ics.AddNewAsync(newConcert);
+        msg = "Create concert was called";
+
+    }
+
+}

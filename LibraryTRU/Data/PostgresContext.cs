@@ -29,8 +29,8 @@ public partial class PostgresContext : DbContext
             entity.HasKey(e => e.Id).HasName("concert_pkey");
 
             entity.ToTable("concert");
-
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Id)
+            .HasColumnName("id");
             entity.Property(e => e.Description)
                 .HasMaxLength(300)
                 .HasColumnName("description");

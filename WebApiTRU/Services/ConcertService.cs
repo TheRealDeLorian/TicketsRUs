@@ -15,4 +15,10 @@ public class ConcertService : IConcertService
     {
         return await _concertcontext.Concerts.ToListAsync();
     }
+
+    public async Task AddNewAsync(Concert concert)
+    {
+       await _concertcontext.Concerts.AddAsync(concert);
+        await _concertcontext.SaveChangesAsync();
+    }
 }
