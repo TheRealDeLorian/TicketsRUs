@@ -18,7 +18,7 @@ public class EmailService : IEmailService
     public void SendEmail(EmailInfoDTO emailInfo)
     {
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("TRU", "ticketsrus4@gmail.com"));
+        message.From.Add(new MailboxAddress("TRU", _config["emailaddress"]));
         message.To.Add(new MailboxAddress("", emailInfo.Email));
         message.Subject = emailInfo.Subject;
         var builder = new BodyBuilder();
@@ -52,7 +52,7 @@ public class EmailService : IEmailService
         message.Body = builder.ToMessageBody();
         using (var client = new MailKit.Net.Smtp.SmtpClient()){
             client.Connect("smtp.gmail.com", 587, false);
-            client.Authenticate("ticketsrus4@gmail.com", $"{_config["emailpassword"]}");
+            client.Authenticate(_config["emailaddress"], $"{_config["emailpassword"]}");
             client.Send(message);
             client.Disconnect(true);
         }

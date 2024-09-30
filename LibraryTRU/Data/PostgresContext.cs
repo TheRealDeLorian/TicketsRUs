@@ -19,9 +19,10 @@ public partial class PostgresContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder
-            .HasPostgresExtension("pg_catalog", "azure")
-            .HasPostgresExtension("pg_catalog", "pgaadauth");
+        //modelBuilder
+        //    .HasPostgresExtension("pg_catalog", "azure")
+        //    .HasPostgresExtension("pg_catalog", "pgaadauth");
+        modelBuilder.HasDefaultSchema("DorianTRU");
 
         modelBuilder.Entity<Concert>(entity =>
         {

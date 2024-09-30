@@ -15,10 +15,13 @@ public class Program
             .AddInteractiveServerComponents();
 
         builder.Services.AddControllers();
-        builder.Services.AddDbContextFactory<PostgresContext>(o =>
+        builder.Services.AddDbContextFactory<PostgresContext>(options =>
         {
-            o.UseNpgsql(builder.Configuration["db"]);
+            options.UseNpgsql(builder.Configuration.GetConnectionString("db"),
+                              b => b.MigrationsAssembly("WebApiTRU"));
         }, ServiceLifetime.Scoped);
+
+
 
         builder.Services.AddScoped<IConcertService, ConcertService>();
         builder.Services.AddScoped<ITicketService, TicketService>();
