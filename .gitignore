@@ -4,7 +4,7 @@
 ## Get latest from `dotnet new gitignore`
 
 # Dump file
-*.sql
+
 
 # dotenv files
 .env

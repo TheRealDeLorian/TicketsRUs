@@ -16,7 +16,7 @@
 
 }
 <h5>Add new concert</h5>
-<form @onsubmit="CreateConcert">
+<form @onsubmit="HandleCreateConcertAsync">
     <InputText @bind-Value="@newConcertName"></InputText>
     <button type="submit">Submit</button>
 </form>
@@ -40,8 +40,10 @@
         }
     }
 
-    private async void CreateConcert()
+    private async void HandleCreateConcertAsync()
     {
+        if (string.IsNullOrEmpty(newConcertName))
+            return;
         DateTime now = DateTime.Now;
         Concert newConcert = new()
         {
@@ -53,7 +55,8 @@
         };
         await ics.AddNewAsync(newConcert);
         msg = "Create concert was called";
-
+        newConcertName = "";
+        Concerts = (List<Concert>)await ics.GetAll();
     }
 
 }
